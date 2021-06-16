@@ -165,7 +165,7 @@ config_socket_init_unix(clicon_handle h,
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, sock, sizeof(addr.sun_path)-1);
-    old_mask = umask(S_IRWXO | S_IXGRP | S_IXUSR);
+    old_mask = umask(S_IXOTH | S_IXGRP | S_IXUSR);
     if (bind(s, (struct sockaddr *)&addr, SUN_LEN(&addr)) < 0){
         clicon_err(OE_UNIX, errno, "bind");
         umask(old_mask); 
