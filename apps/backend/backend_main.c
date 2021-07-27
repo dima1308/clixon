@@ -1033,11 +1033,6 @@ main(int    argc,
         clicon_err(OE_DAEMON, errno, "Setting signal");
         goto done;
     }
-    /* This is in case restconf daemon forked using process-control API */
-    if (set_signal(SIGCHLD, backend_sig_child, NULL) < 0){
-        clicon_err(OE_DAEMON, errno, "Setting signal");
-        goto done;
-    }
     /* Client exit in the middle of a transaction, handled in clicon_msg_send */
     if (set_signal(SIGPIPE, SIG_IGN, NULL) < 0){
         clicon_err(OE_DAEMON, errno, "Setting signal");
