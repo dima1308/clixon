@@ -190,4 +190,4 @@
  * <with-defaults> parameter.
  * To keep the previous behavior (as in 6.0) set this option with #define
  */
-#undef NETCONF_DEFAULT_RETRIEVAL_REPORT_ALL
+#define NETCONF_DEFAULT_RETRIEVAL_REPORT_ALL
