@@ -858,12 +858,12 @@ snmp_table_get(clicon_handle               h,
     yang_stmt *ys;
     yang_stmt *yk;
     char      *xpath = NULL;
-    cvec      *cvk_orig;
     cvec      *cvk_val = NULL;
     int        i;
     cg_var    *cv;
     char      *defaultval = NULL;
     int        ret;
+    clicon_debug(1, "%s", __FUNCTION__);
 
     /* Get yang of leaf from first part of OID */
     ys = NULL;
@@ -889,18 +889,14 @@ snmp_table_get(clicon_handle               h,
      */
     if (yang_extension_value_opt(ys, "smiv2:defval", NULL, &defaultval) < 0)
         goto done;
-    
     /* Create xpath with right keys from later part of OID 
      * Inverse of snmp_str2oid
      */
-    if ((cvk_orig = yang_cvec_get(yt)) == NULL){
-        clicon_err(OE_YANG, 0, "No keys");
+    if (clixon_snmp_ylist_keys(yt, &cvk_val) < 0) {
+        clicon_err(OE_XML, errno, "clixon_snmp_ylist_keys");
         goto done;
     }
-    if ((cvk_val = cvec_dup(cvk_orig)) == NULL){
-        clicon_err(OE_UNIX, errno, "cvec_dup");
-        goto done;
-    }
+
     /* read through keys and create cvk */
     oidilen = oidslen-(oidtlen+1);
     oidi = oids+oidtlen+1;
@@ -974,7 +970,6 @@ snmp_table_set(clicon_handle               h,
     yang_stmt *yk;
     yang_stmt *yrestype = NULL;
     char      *xpath = NULL;
-    cvec      *cvk_orig;
     cvec      *cvk_val = NULL;
     int        i;
     cg_var    *cv;
@@ -983,6 +978,7 @@ snmp_table_set(clicon_handle               h,
     netsnmp_variable_list  *requestvb;
     int        rowstatus = 0;
     char      *origtype;
+    clicon_debug(1, "%s", __FUNCTION__);
 
     /* Get OID from table /list  */
     if ((ret = yangext_oid_get(yt, oidt, &oidtlen, NULL)) < 0)
@@ -1056,12 +1052,9 @@ snmp_table_set(clicon_handle               h,
     /* Create xpath with right keys from later part of OID 
      * Inverse of snmp_str2oid
      */
-    if ((cvk_orig = yang_cvec_get(yt)) == NULL){
-        clicon_err(OE_YANG, 0, "No keys");
-        goto done;
-    }
-    if ((cvk_val = cvec_dup(cvk_orig)) == NULL){
-        clicon_err(OE_UNIX, errno, "cvec_dup");
+    
+    if (clixon_snmp_ylist_keys(yt, &cvk_val) < 0) {
+        clicon_err(OE_XML, errno, "clixon_snmp_ylist_keys");
         goto done;
     }
     /* read through keys and create cvk */
@@ -1182,7 +1175,7 @@ snmp_table_getnext(clicon_handle               h,
     yang_stmt *ycol;
     yang_stmt *ys;
     int        ret;
-    cvec      *cvk_name;
+    cvec      *cvk_name = NULL;
     oid        oidc[MAX_OID_LEN] = {0,}; /* Table / list oid */
     size_t     oidclen = MAX_OID_LEN;
     oid        oidk[MAX_OID_LEN] = {0,}; /* Key oid */
@@ -1212,7 +1205,7 @@ snmp_table_getnext(clicon_handle               h,
     }
     if ((xtable = xpath_first(xt, nsc, "%s", xpath)) != NULL) {
         /* Make a clone of key-list, but replace names with values */
-        if ((cvk_name = yang_cvec_get(ylist)) == NULL){
+        if (clixon_snmp_ylist_keys(ylist, &cvk_name) < 0){
             clicon_err(OE_YANG, 0, "No keys");
             goto done;
         }
@@ -1260,6 +1253,8 @@ snmp_table_getnext(clicon_handle               h,
     }
     retval = found;
  done:
+    if (cvk_name)
+        cvec_free(cvk_name);
     if (cb)
         cbuf_free(cb);
     if (xpath)
