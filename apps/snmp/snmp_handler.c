@@ -257,7 +257,7 @@ snmp_scalar_get(clicon_handle               h,
     clicon_ptr_get(h, "snmp-rowstatus-tree", (void**)&xcache);
     if (xcache==NULL || (x = xpath_first(xcache, nsc, "%s", xpath)) == NULL){
         /* If not found do the backend call */
-        if (clicon_rpc_get(h, xpath, nsc, CONTENT_ALL, -1, NULL, &xt) < 0)
+        if (clicon_rpc_get(h, "/", nsc, CONTENT_ALL, -1, NULL, &xt) < 0)
             goto done;
         /* Detect error XXX Error handling could improve */
         if ((xerr = xpath_first(xt, NULL, "/rpc-error")) != NULL){
