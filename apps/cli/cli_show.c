@@ -309,7 +309,7 @@ expand_dbvar(void   *h,
             goto done;
     }
     /* Get configuration based on cbxpath */
-    if (clicon_rpc_get_config(h, NULL, dbstr, cbuf_get(cbxpath), nsc, NULL, &xt) < 0) 
+    if (clicon_rpc_get(h, cbuf_get(cbxpath), nsc, CONTENT_ALL, -1, NULL, &xt) < 0) 
         goto done;
     if ((xe = xpath_first(xt, NULL, "/rpc-error")) != NULL){
         clixon_netconf_error(xe, "Get configuration", NULL);
