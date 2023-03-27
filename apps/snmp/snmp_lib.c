@@ -153,6 +153,7 @@ static const map_str2str yang_snmp_types[] = {
     {"int16",   "int32"},
     {"uint8",   "uint32"},
     {"uint16",  "uint32"},
+    {"union",   "string"},
     { NULL,    NULL} /* if not found */
 };
 char* yang_type_to_snmp(char* yang_type)
