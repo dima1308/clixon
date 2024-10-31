@@ -68,6 +68,7 @@
 
 #include "snmp_lib.h"
 #include "snmp_register.h"
+#include "snmp_handler.h"
 
 /* Command line options to be passed to getopt(3) */
 #define SNMP_OPTS "hD:f:l:o:z"
@@ -117,6 +118,7 @@ snmp_terminate(clicon_handle h)
         xml_free(x);
         x = NULL;
     }
+    clixon_snmp_table_exit(h);
     clicon_rpc_close_session(h);
     if ((yspec = clicon_dbspec_yang(h)) != NULL)
         ys_free(yspec);
